@@ -6,623 +6,101 @@
 <title>Victory Line Analytics — Performance Tracker v7.2</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
-
   :root {
-    --bg:        #0a0a0c;
-    --surface:   #111114;
-    --border:    #1e1e24;
-    --border2:   #2a2a32;
-    --text:      #e8e8f0;
-    --muted:     #6b6b80;
-    --accent:    #c8a84b;
-    --accent2:   #8b6f2e;
-    --win:       #3a9e6e;
-    --loss:      #c04040;
-    --void:      #5a5a6e;
-    --lean:      #4a7fc4;
-    --pending:   #8b6f2e;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 14px;
-    min-height: 100vh;
-  }
-
-  /* HEADER */
-  .header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 20px 16px 0;
-  }
-
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-  }
-
-  .brand {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .title {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: -0.01em;
-    line-height: 1.1;
-  }
-
-  .version-badge {
-    background: var(--accent2);
-    color: var(--accent);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 2px;
-    letter-spacing: 0.08em;
-  }
-
-  /* STAT STRIP */
-  .stat-strip {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border-top: 1px solid var(--border);
-    margin: 0 -16px;
-  }
-
-  .stat-cell {
-    background: var(--surface);
-    padding: 12px 14px;
-    text-align: center;
-  }
-
-  .stat-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
-  }
-
-  .stat-value {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .stat-value.positive { color: var(--win); }
-  .stat-value.negative { color: var(--loss); }
-  .stat-value.gold { color: var(--accent); }
-
-  /* TABS */
-  .tabs {
-    display: flex;
-    overflow-x: auto;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 16px;
-    gap: 0;
-    scrollbar-width: none;
-  }
-  .tabs::-webkit-scrollbar { display: none; }
-
-  .tab {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-    padding: 12px 16px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    transition: color 0.15s, border-color 0.15s;
-    background: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-  }
-
-  .tab:hover { color: var(--text); }
-  .tab.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-
-  /* CONTENT */
-  .content {
-    padding: 16px;
-    display: none;
-  }
-  .content.active { display: block; }
-
-  /* SECTION HEADERS */
-  .section-header {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    padding: 8px 0 10px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .section-tag {
-    background: var(--border2);
-    color: var(--muted);
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 2px;
-  }
-
-  /* RECORD CARD */
-  .record-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .record-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 14px;
-  }
-
-  .record-card.full { grid-column: 1 / -1; }
-
-  .record-card-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 8px;
-  }
-
-  .record-wl {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-
-  .record-units {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-    font-weight: 600;
-  }
-
-  .record-pct {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  /* LOCKED BADGE */
-  .locked {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--border2);
-    color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 2px;
-    margin-left: 8px;
-  }
-
-  /* PLAY TABLE */
-  .play-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-
-  .play-table th {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    text-align: left;
-    padding: 6px 8px;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-
-  .play-table td {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    padding: 9px 8px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: middle;
-  }
-
-  .play-table tr:last-child td { border-bottom: none; }
-
-  .play-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-  /* RESULT BADGES */
-  .badge {
-    display: inline-block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    font-weight: 700;
-    padding: 3px 7px;
-    border-radius: 2px;
-    letter-spacing: 0.06em;
-  }
-
-  .badge-win { background: rgba(58,158,110,0.2); color: var(--win); }
-  .badge-loss { background: rgba(192,64,64,0.2); color: var(--loss); }
-  .badge-void { background: rgba(90,90,110,0.2); color: var(--void); }
-  .badge-pending { background: rgba(139,111,46,0.2); color: var(--accent); }
-  .badge-lean { background: rgba(74,127,196,0.2); color: var(--lean); }
-  .badge-test { background: rgba(139,111,46,0.15); color: #8b9fbc; }
-
-  /* STORY TYPE TRACKER */
-  .story-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-
-  .story-row {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 12px 14px;
-  }
-
-  .story-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
-  .story-name {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .story-type-num {
-    color: var(--accent);
-    margin-right: 6px;
-  }
-
-  .story-stats {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-  }
-
-  .story-bar-bg {
-    height: 3px;
-    background: var(--border2);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .story-bar-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 0.3s ease;
-  }
-
-  .story-empty {
-    color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    font-style: italic;
-  }
-
-  /* ADD PLAY FORM */
-  .add-form {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-
-  .form-title {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 14px;
-  }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .form-group.full { grid-column: 1 / -1; }
-
-  .form-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .form-input, .form-select {
-    background: var(--bg);
-    border: 1px solid var(--border2);
-    border-radius: 3px;
-    color: var(--text);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    padding: 8px 10px;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-
-  .form-input:focus, .form-select:focus {
-    border-color: var(--accent2);
-  }
-
-  .form-select option { background: var(--surface); }
-
-  .btn {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 10px 18px;
-    border-radius: 3px;
-    cursor: pointer;
-    border: none;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transition: opacity 0.15s;
-  }
-
-  .btn:hover { opacity: 0.85; }
-
-  .btn-primary {
-    background: var(--accent);
-    color: var(--bg);
-    width: 100%;
-  }
-
-  .btn-small {
-    font-size: 9px;
-    padding: 4px 10px;
-    background: var(--border2);
-    color: var(--muted);
-  }
-
-  /* LESSON LIST */
-  .lesson-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .lesson-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent2);
-    border-radius: 0 4px 4px 0;
-    padding: 10px 12px;
-  }
-
-  .lesson-num {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    color: var(--accent);
-    font-weight: 700;
-    margin-bottom: 3px;
-  }
-
-  .lesson-text {
-    font-size: 12px;
-    color: var(--text);
-    line-height: 1.5;
-  }
-
-  /* MILESTONE */
-  .milestone-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .milestone-row:last-child { border-bottom: none; }
-
-  .milestone-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .dot-done { background: var(--win); }
-  .dot-active { background: var(--accent); }
-  .dot-future { background: var(--border2); }
-
-  .milestone-text {
-    font-size: 12px;
-    color: var(--text);
-    line-height: 1.4;
-  }
-
-  .milestone-text.done { color: var(--muted); text-decoration: line-through; }
-
-  /* PROGRESS BAR */
-  .progress-container {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 14px;
-    margin-bottom: 12px;
-  }
-
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
-
-  .progress-title {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--text);
-  }
-
-  .progress-pct {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    font-weight: 700;
-  }
-
-  .progress-bar {
-    height: 4px;
-    background: var(--border2);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent2), var(--accent));
-    border-radius: 2px;
-  }
-
-  .progress-sub {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 6px;
-  }
-
-  /* VERSION HISTORY */
-  .version-item {
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .version-item:last-child { border-bottom: none; }
-
-  .version-tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--accent);
-    margin-bottom: 4px;
-  }
-
-  .version-desc {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-
-  /* EMPTY STATE */
-  .empty {
-    text-align: center;
-    padding: 32px 16px;
-    color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-  }
-
-  .empty-icon {
-    font-size: 24px;
-    margin-bottom: 8px;
-    opacity: 0.4;
-  }
-
-  /* DIVIDER */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 16px 0;
-  }
-
-  /* RUNNING TOTAL ROW */
-  .running-row td {
-    font-weight: 700;
-    color: var(--accent);
-    border-top: 1px solid var(--border2);
-  }
-
-  /* SCROLLABLE TABLE WRAPPER */
-  .table-scroll {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* PL COLORS */
-  .pl-pos { color: var(--win); }
-  .pl-neg { color: var(--loss); }
-  .pl-zero { color: var(--muted); }
-
-  /* FOOTER */
-  .footer {
-    text-align: center;
-    padding: 24px 16px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    letter-spacing: 0.08em;
-    border-top: 1px solid var(--border);
-    margin-top: 20px;
-  }
-
-  .footer span { color: var(--accent); }
+    --bg:#0a0a0c;--surface:#111114;--border:#1e1e24;--border2:#2a2a32;
+    --text:#e8e8f0;--muted:#6b6b80;--accent:#c8a84b;--accent2:#8b6f2e;
+    --win:#3a9e6e;--loss:#c04040;--void:#5a5a6e;--lean:#4a7fc4;--pending:#8b6f2e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:14px;min-height:100vh;}
+  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 16px 0;}
+  .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+  .brand{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+  .title{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--accent);letter-spacing:-.01em;line-height:1.1;}
+  .version-badge{background:var(--accent2);color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:2px;letter-spacing:.08em;}
+  .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border);margin:0 -16px;}
+  .stat-cell{background:var(--surface);padding:12px 14px;text-align:center;}
+  .stat-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+  .stat-value{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--text);}
+  .stat-value.positive{color:var(--win)}.stat-value.negative{color:var(--loss)}.stat-value.gold{color:var(--accent)}
+  .tabs{display:flex;overflow-x:auto;background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--muted);padding:12px 16px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;text-transform:uppercase;letter-spacing:.08em;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;}
+  .tab:hover{color:var(--text)}.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .content{padding:16px;display:none;}.content.active{display:block;}
+  .section-header{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;padding:8px 0 10px;border-bottom:1px solid var(--border);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+  .section-tag{background:var(--border2);color:var(--muted);font-size:9px;padding:2px 6px;border-radius:2px;}
+  .record-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .record-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px;}
+  .record-card-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+  .record-wl{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;}
+  .record-units{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;}
+  .record-pct{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;}
+  .play-table{width:100%;border-collapse:collapse;margin-bottom:20px;}
+  .play-table th{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  .play-table td{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:9px 8px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .play-table tr:last-child td{border-bottom:none;}
+  .play-table tr:hover td{background:rgba(255,255,255,.02);}
+  .badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;padding:3px 7px;border-radius:2px;letter-spacing:.06em;}
+  .badge-win{background:rgba(58,158,110,.2);color:var(--win)}
+  .badge-loss{background:rgba(192,64,64,.2);color:var(--loss)}
+  .badge-void{background:rgba(90,90,110,.2);color:var(--void)}
+  .badge-pending{background:rgba(139,111,46,.2);color:var(--accent)}
+  .badge-lean{background:rgba(74,127,196,.2);color:var(--lean)}
+  .badge-test{background:rgba(139,111,46,.15);color:#8b9fbc}
+  .badge-ds{background:rgba(200,100,40,.2);color:#e08040}
+  .story-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+  .story-row{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 14px;}
+  .story-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .story-name{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--text);}
+  .story-type-num{color:var(--accent);margin-right:6px;}
+  .story-stats{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);}
+  .story-bar-bg{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+  .story-bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease;}
+  .add-form{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:20px;}
+  .form-title{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+  .form-group{display:flex;flex-direction:column;gap:5px;}
+  .form-group.full{grid-column:1/-1;}
+  .form-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+  .form-input,.form-select{background:var(--bg);border:1px solid var(--border2);border-radius:3px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:8px 10px;width:100%;outline:none;transition:border-color .15s;}
+  .form-input:focus,.form-select:focus{border-color:var(--accent2);}
+  .form-select option{background:var(--surface);}
+  .btn{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;padding:10px 18px;border-radius:3px;cursor:pointer;border:none;letter-spacing:.06em;text-transform:uppercase;transition:opacity .15s;}
+  .btn:hover{opacity:.85}.btn-primary{background:var(--accent);color:var(--bg);width:100%;}
+  .lesson-list{display:flex;flex-direction:column;gap:8px;}
+  .lesson-item{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:0 4px 4px 0;padding:10px 12px;}
+  .lesson-num{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--accent);font-weight:700;margin-bottom:3px;}
+  .lesson-text{font-size:12px;color:var(--text);line-height:1.5;}
+  .milestone-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+  .milestone-row:last-child{border-bottom:none;}
+  .milestone-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .dot-done{background:var(--win)}.dot-active{background:var(--accent)}.dot-future{background:var(--border2)}
+  .milestone-text{font-size:12px;color:var(--text);line-height:1.4;}
+  .progress-container{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:12px;}
+  .progress-label{display:flex;justify-content:space-between;margin-bottom:8px;}
+  .progress-title{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text);}
+  .progress-pct{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);font-weight:700;}
+  .progress-bar{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px;}
+  .progress-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:6px;}
+  .version-item{padding:12px 0;border-bottom:1px solid var(--border);}
+  .version-item:last-child{border-bottom:none;}
+  .version-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+  .version-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+  .empty{text-align:center;padding:32px 16px;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .empty-icon{font-size:24px;margin-bottom:8px;opacity:.4;}
+  .divider{height:1px;background:var(--border);margin:16px 0;}
+  .running-row td{font-weight:700;color:var(--accent);border-top:1px solid var(--border2);}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .pl-pos{color:var(--win)}.pl-neg{color:var(--loss)}.pl-zero{color:var(--muted)}
+  .ds-note{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#e08040;margin-top:4px;}
+  .footer{text-align:center;padding:24px 16px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;border-top:1px solid var(--border);margin-top:20px;}
+  .footer span{color:var(--accent);}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-top">
     <div>
@@ -631,79 +109,35 @@
     </div>
     <div class="version-badge">v7.2</div>
   </div>
-
-  <!-- LIVE STAT STRIP -->
   <div class="stat-strip">
-    <div class="stat-cell">
-      <div class="stat-label">All-Time</div>
-      <div class="stat-value" id="alltime-wl">15–13</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">Net Units</div>
-      <div class="stat-value positive" id="alltime-units">+1.94u</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">v7.2 Era</div>
-      <div class="stat-value" id="era-wl">0–0</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">v7.2 Units</div>
-      <div class="stat-value gold" id="era-units">0u</div>
-    </div>
+    <div class="stat-cell"><div class="stat-label">All-Time</div><div class="stat-value" id="alltime-wl">15–13</div></div>
+    <div class="stat-cell"><div class="stat-label">Net Units</div><div class="stat-value positive" id="alltime-units">+1.94u</div></div>
+    <div class="stat-cell"><div class="stat-label">v7.2 Era</div><div class="stat-value" id="era-wl">0–0</div></div>
+    <div class="stat-cell"><div class="stat-label">v7.2 Units</div><div class="stat-value gold" id="era-units">0u</div></div>
   </div>
 </div>
 
-<!-- TABS -->
 <div class="tabs">
-  <button class="tab active" onclick="showTab('official')">Official Record</button>
-  <button class="tab" onclick="showTab('leans')">Leans & Tests</button>
-  <button class="tab" onclick="showTab('storytypes')">Story Types</button>
-  <button class="tab" onclick="showTab('addplay')">Add Play</button>
-  <button class="tab" onclick="showTab('lessons')">Lessons</button>
-  <button class="tab" onclick="showTab('system')">System</button>
+  <button class="tab active" onclick="showTab('official',this)">Official Record</button>
+  <button class="tab" onclick="showTab('leans',this)">Leans & Tests</button>
+  <button class="tab" onclick="showTab('storytypes',this)">Story Types</button>
+  <button class="tab" onclick="showTab('addplay',this)">Add Play</button>
+  <button class="tab" onclick="showTab('lessons',this)">Lessons</button>
+  <button class="tab" onclick="showTab('system',this)">System</button>
 </div>
 
-<!-- TAB: OFFICIAL RECORD -->
+<!-- OFFICIAL RECORD -->
 <div id="tab-official" class="content active">
-
-  <!-- PRE-v7.2 LOCKED RECORD -->
-  <div class="section-header">
-    Pre-v7.2 Historical Record
-    <span class="section-tag">LOCKED</span>
-  </div>
-
+  <div class="section-header">Pre-v7.2 Historical Record<span class="section-tag">LOCKED</span></div>
   <div class="record-grid">
-    <div class="record-card">
-      <div class="record-card-label">Period</div>
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--text)">May 18 – Jun 8, 2026</div>
-    </div>
-    <div class="record-card">
-      <div class="record-card-label">Record</div>
-      <div class="record-wl">15–13</div>
-      <div class="record-pct">53.6% win rate</div>
-    </div>
-    <div class="record-card">
-      <div class="record-card-label">Net Units</div>
-      <div class="record-units positive">+1.94u</div>
-    </div>
-    <div class="record-card">
-      <div class="record-card-label">Total Plays</div>
-      <div class="record-wl">28</div>
-    </div>
+    <div class="record-card"><div class="record-card-label">Period</div><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--text)">May 18 – Jun 8, 2026</div></div>
+    <div class="record-card"><div class="record-card-label">Record</div><div class="record-wl">15–13</div><div class="record-pct">53.6% win rate</div></div>
+    <div class="record-card"><div class="record-card-label">Net Units</div><div class="record-units positive">+1.94u</div></div>
+    <div class="record-card"><div class="record-card-label">Total Plays</div><div class="record-wl">28</div></div>
   </div>
-
   <div class="table-scroll">
   <table class="play-table">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Pick</th>
-        <th>Odds</th>
-        <th>Units</th>
-        <th>Result</th>
-        <th>P/L</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Date</th><th>Pick</th><th>Odds</th><th>Units</th><th>Result</th><th>P/L</th></tr></thead>
     <tbody>
       <tr><td>May 18</td><td>Rays ML</td><td>-148</td><td>1.0u</td><td><span class="badge badge-win">WIN</span></td><td class="pl-pos">+0.68u</td></tr>
       <tr><td>May 19</td><td>Mariners ML</td><td>-149</td><td>1.25u</td><td><span class="badge badge-loss">LOSS</span></td><td class="pl-neg">-1.25u</td></tr>
@@ -741,92 +175,44 @@
 
   <div class="divider"></div>
 
-  <!-- v7.2 ERA RECORD -->
-  <div class="section-header">
-    v7.2 Era Record — Active
-    <span class="section-tag">LIVE</span>
-  </div>
-
+  <div class="section-header">v7.2 Era Record — Active<span class="section-tag">LIVE</span></div>
   <div class="record-grid" style="margin-bottom:14px">
-    <div class="record-card">
-      <div class="record-card-label">Era Start</div>
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--text)">June 9, 2026</div>
-    </div>
-    <div class="record-card">
-      <div class="record-card-label">v7.2 Record</div>
-      <div class="record-wl" id="v72-wl-display">0–0</div>
-    </div>
-    <div class="record-card">
-      <div class="record-card-label">v7.2 Net Units</div>
-      <div class="record-units gold" id="v72-units-display">0u</div>
-    </div>
-    <div class="record-card">
-      <div class="record-card-label">Win Rate</div>
-      <div class="record-wl" id="v72-pct-display">—</div>
-    </div>
+    <div class="record-card"><div class="record-card-label">Era Start</div><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--text)">June 9, 2026</div></div>
+    <div class="record-card"><div class="record-card-label">v7.2 Record</div><div class="record-wl" id="v72-wl-display">0–0</div></div>
+    <div class="record-card"><div class="record-card-label">v7.2 Net Units</div><div class="record-units gold" id="v72-units-display">0u</div></div>
+    <div class="record-card"><div class="record-card-label">Win Rate</div><div class="record-wl" id="v72-pct-display">—</div></div>
   </div>
 
-  <div class="table-scroll">
-  <table class="play-table" id="v72-table">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Pick</th>
-        <th>Sport</th>
-        <th>Type</th>
-        <th>Odds</th>
-        <th>Units</th>
-        <th>Stars</th>
-        <th>Story</th>
-        <th>EV</th>
-        <th>Result</th>
-        <th>P/L</th>
-        <th>CLV</th>
-      </tr>
-    </thead>
-    <tbody id="v72-tbody">
-      <tr><td colspan="12">
-        <div class="empty">
-          <div class="empty-icon">📋</div>
-          June 9 plays pending result confirmation
-        </div>
-      </td></tr>
-    </tbody>
-  </table>
-  </div>
-
-</div>
-
-<!-- TAB: LEANS & TESTS -->
-<div id="tab-leans" class="content">
-
-  <div class="section-header">
-    Research / Test Record
-    <span class="section-tag">PROP GRADUATION TRACK</span>
-  </div>
-
-  <div class="progress-container">
-    <div class="progress-label">
-      <span class="progress-title">Prop Graduation Progress</span>
-      <span class="progress-pct">90% (18/20)</span>
+  <!-- DEAD SWITCH ALERT -->
+  <div style="background:rgba(200,100,40,.08);border:1px solid rgba(200,100,40,.3);border-radius:4px;padding:12px;margin-bottom:14px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#e08040;font-weight:700;margin-bottom:8px;">⚡ DEAD-SWITCH ITEMS — CONFIRM PRE-GAME</div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);line-height:1.8;">
+      PIT ML — Will Smith (LAD) day-to-day status. Confirm active or scratched.<br>
+      PHI ML — Dylan Cease confirms taking the mound. If scratched → play is OFF.
     </div>
-    <div class="progress-bar">
-      <div class="progress-fill" style="width:90%"></div>
-    </div>
-    <div class="progress-sub">11W–7L (61%) across 18 closed tests — need 20 total at 60%+ to graduate</div>
   </div>
 
   <div class="table-scroll">
   <table class="play-table">
     <thead>
-      <tr>
-        <th>Date</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Result</th>
-        <th>Status</th>
-      </tr>
+      <tr><th>#</th><th>Date</th><th>Pick</th><th>Sport</th><th>Odds</th><th>Units</th><th>Stars</th><th>Story</th><th>EV</th><th>Result</th><th>P/L</th><th>CLV</th></tr>
     </thead>
+    <tbody id="v72-tbody"></tbody>
+  </table>
+  </div>
+</div>
+
+<!-- LEANS & TESTS -->
+<div id="tab-leans" class="content">
+  <div class="section-header">Research / Test Record<span class="section-tag">PROP GRADUATION TRACK</span></div>
+  <div class="progress-container">
+    <div class="progress-label"><span class="progress-title">Prop Graduation Progress</span><span class="progress-pct">90% (18/20)</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+    <div class="progress-sub">11W–7L (61%) across 18 closed tests — need 20 total at 60%+ to graduate</div>
+  </div>
+  <div class="table-scroll">
+  <table class="play-table">
+    <thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Result</th><th>Status</th></tr></thead>
     <tbody>
       <tr><td>May 21</td><td><span class="badge badge-test">TEST</span></td><td>Test 1</td><td>2W–1L</td><td><span class="badge badge-void">CLOSED</span></td></tr>
       <tr><td>May 22</td><td><span class="badge badge-test">TEST</span></td><td>Test 2</td><td>4W–1L</td><td><span class="badge badge-void">CLOSED</span></td></tr>
@@ -838,191 +224,90 @@
     </tbody>
   </table>
   </div>
-
   <div class="divider"></div>
-
-  <div class="section-header">
-    Lean Record
-    <span class="section-tag">TRACKED — NOT OFFICIAL</span>
-  </div>
-
+  <div class="section-header">Lean Record — June 9<span class="section-tag">TRACKED — NOT OFFICIAL</span></div>
   <div class="table-scroll">
-  <table class="play-table" id="lean-table">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Pick</th>
-        <th>Odds</th>
-        <th>Result</th>
-        <th>Notes</th>
-      </tr>
-    </thead>
-    <tbody id="lean-tbody">
+  <table class="play-table">
+    <thead><tr><th>Date</th><th>Pick</th><th>Odds</th><th>Result</th><th>Notes</th></tr></thead>
+    <tbody>
       <tr><td>May 21</td><td>Lean 1</td><td>—</td><td><span class="badge badge-win">WIN</span></td><td>—</td></tr>
       <tr><td>May 21</td><td>Lean 2</td><td>—</td><td><span class="badge badge-win">WIN</span></td><td>—</td></tr>
       <tr><td>May 22</td><td>Lean 3</td><td>—</td><td><span class="badge badge-loss">LOSS</span></td><td>—</td></tr>
       <tr><td>May 23</td><td>Lean 4</td><td>—</td><td><span class="badge badge-loss">LOSS</span></td><td>—</td></tr>
-      <tr><td>Jun 9</td><td>MIA ML</td><td>-125</td><td><span class="badge badge-pending">PENDING</span></td><td>Meyer elite, thin EV — lean not official</td></tr>
-      <tr><td>Jun 9</td><td>CAR +115</td><td>+115</td><td><span class="badge badge-pending">PENDING</span></td><td>Waiting goalie confirmation</td></tr>
-      <tr class="running-row"><td colspan="3">LEAN RECORD</td><td>2W–2L</td><td></td></tr>
+      <tr><td>Jun 9</td><td>MIA Marlins ML</td><td>-125</td><td><span class="badge badge-pending">PENDING</span></td><td>Meyer elite but EV near zero — lean only</td></tr>
+      <tr><td>Jun 9</td><td>CAR Hurricanes ML</td><td>+115</td><td><span class="badge badge-pending">PENDING</span></td><td>Goalie unconfirmed at lock — Andersen vs Bussi</td></tr>
+      <tr class="running-row"><td colspan="3">LEAN RECORD (closed only)</td><td>2W–2L</td><td></td></tr>
     </tbody>
   </table>
   </div>
-
 </div>
 
-<!-- TAB: STORY TYPES -->
+<!-- STORY TYPES -->
 <div id="tab-storytypes" class="content">
-
-  <div class="section-header">
-    Story Type Hit-Rate Database
-    <span class="section-tag">v7.2 ERA</span>
-  </div>
-
+  <div class="section-header">Story Type Hit-Rate Database<span class="section-tag">v7.2 ERA</span></div>
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px;margin-bottom:16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);line-height:1.6">
-    Tracks which narratives generate real edges over time. Populated automatically as v7.2 official plays are logged. 30+ plays needed for statistical significance.
+    Tracks which narratives generate real edges over time. Populated as v7.2 official plays are logged. 30+ plays needed for statistical significance.
   </div>
-
-  <div class="story-grid" id="story-grid">
-    <!-- Populated by JS -->
-  </div>
-
+  <div class="story-grid" id="story-grid"></div>
 </div>
 
-<!-- TAB: ADD PLAY -->
+<!-- ADD PLAY -->
 <div id="tab-addplay" class="content">
-
   <div class="add-form">
     <div class="form-title">+ Log New Official Play</div>
     <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Date</label>
-        <input type="date" class="form-input" id="f-date">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Sport</label>
+      <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="f-date"></div>
+      <div class="form-group"><label class="form-label">Sport</label>
         <select class="form-select" id="f-sport">
-          <option value="">Select</option>
-          <option>MLB</option>
-          <option>NFL</option>
-          <option>NBA</option>
-          <option>NHL</option>
-          <option>UFC</option>
-          <option>Tennis</option>
-          <option>Soccer</option>
-          <option>WNBA</option>
+          <option value="">Select</option><option>MLB</option><option>NFL</option><option>NBA</option><option>NHL</option><option>UFC</option><option>Tennis</option><option>Soccer</option><option>WNBA</option>
         </select>
       </div>
-      <div class="form-group full">
-        <label class="form-label">Pick Description</label>
-        <input type="text" class="form-input" id="f-pick" placeholder="e.g. Pittsburgh Pirates ML">
+      <div class="form-group full"><label class="form-label">Pick Description</label><input type="text" class="form-input" id="f-pick" placeholder="e.g. Pittsburgh Pirates ML"></div>
+      <div class="form-group"><label class="form-label">Bet Type</label>
+        <select class="form-select" id="f-type"><option>ML</option><option>Spread</option><option>Total</option><option>RL</option><option>Prop</option><option>Parlay</option></select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Bet Type</label>
-        <select class="form-select" id="f-type">
-          <option>ML</option>
-          <option>Spread</option>
-          <option>Total</option>
-          <option>RL</option>
-          <option>Prop</option>
-          <option>Parlay</option>
-        </select>
+      <div class="form-group"><label class="form-label">Odds</label><input type="text" class="form-input" id="f-odds" placeholder="-110"></div>
+      <div class="form-group"><label class="form-label">Units</label><input type="number" class="form-input" id="f-units" placeholder="1.0" step="0.25"></div>
+      <div class="form-group"><label class="form-label">Stars</label>
+        <select class="form-select" id="f-stars"><option>⭐⭐⭐ (0.75u)</option><option>⭐⭐⭐⭐ (1.0u)</option><option>⭐⭐⭐⭐⭐ (1.25u)</option></select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Odds</label>
-        <input type="text" class="form-input" id="f-odds" placeholder="-110">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Units</label>
-        <input type="number" class="form-input" id="f-units" placeholder="1.0" step="0.25">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Stars</label>
-        <select class="form-select" id="f-stars">
-          <option>⭐⭐⭐ (0.75u)</option>
-          <option>⭐⭐⭐⭐ (1.0u)</option>
-          <option>⭐⭐⭐⭐⭐ (1.25u)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Story Type</label>
+      <div class="form-group"><label class="form-label">Story Type</label>
         <select class="form-select" id="f-story">
-          <option value="1">Type 1 — Trajectory</option>
-          <option value="2">Type 2 — Context Reversal</option>
-          <option value="3">Type 3 — Tool Mismatch</option>
-          <option value="4">Type 4 — Market Anchoring</option>
-          <option value="5">Type 5 — Blueprint</option>
-          <option value="6">Type 6 — Production Quality</option>
-          <option value="7">Type 7 — Adversity Vacuum</option>
-          <option value="8">Type 8 — Style Specificity</option>
-          <option value="9">Type 9 — Desperation Pace</option>
+          <option value="1">Type 1 — Trajectory</option><option value="2">Type 2 — Context Reversal</option><option value="3">Type 3 — Tool Mismatch</option><option value="4">Type 4 — Market Anchoring</option><option value="5">Type 5 — Blueprint</option><option value="6">Type 6 — Production Quality</option><option value="7">Type 7 — Adversity Vacuum</option><option value="8">Type 8 — Style Specificity</option><option value="9">Type 9 — Desperation Pace</option>
         </select>
       </div>
-      <div class="form-group">
-        <label class="form-label">EV Score</label>
-        <input type="text" class="form-input" id="f-ev" placeholder="+0.184">
+      <div class="form-group"><label class="form-label">EV Score</label><input type="text" class="form-input" id="f-ev" placeholder="+0.184"></div>
+      <div class="form-group"><label class="form-label">Result</label>
+        <select class="form-select" id="f-result"><option value="PENDING">Pending</option><option value="WIN">Win</option><option value="LOSS">Loss</option><option value="VOID">Void</option></select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Result</label>
-        <select class="form-select" id="f-result">
-          <option value="PENDING">Pending</option>
-          <option value="WIN">Win</option>
-          <option value="LOSS">Loss</option>
-          <option value="VOID">Void</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">CLV</label>
-        <input type="text" class="form-input" id="f-clv" placeholder="e.g. -105">
-      </div>
-      <div class="form-group">
-        <label class="form-label">List</label>
-        <select class="form-select" id="f-list">
-          <option value="1">List 1 — Official</option>
-          <option value="2">List 2 — Prop</option>
-        </select>
+      <div class="form-group"><label class="form-label">CLV</label><input type="text" class="form-input" id="f-clv" placeholder="e.g. -105"></div>
+      <div class="form-group"><label class="form-label">List</label>
+        <select class="form-select" id="f-list"><option value="1">List 1 — Official</option><option value="2">List 2 — Prop</option></select>
       </div>
     </div>
     <button class="btn btn-primary" onclick="addPlay()">LOG PLAY</button>
   </div>
 
-  <div class="add-form" style="margin-top:12px">
-    <div class="form-title">Update Result</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Play Index (#)</label>
-        <input type="number" class="form-input" id="u-index" placeholder="Row number">
-      </div>
-      <div class="form-group">
-        <label class="form-label">New Result</label>
-        <select class="form-select" id="u-result">
-          <option value="WIN">Win</option>
-          <option value="LOSS">Loss</option>
-          <option value="VOID">Void</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">CLV (if applicable)</label>
-        <input type="text" class="form-input" id="u-clv" placeholder="e.g. -105">
-      </div>
-      <div class="form-group">
-        <label class="form-label">P/L (units)</label>
-        <input type="text" class="form-input" id="u-pl" placeholder="e.g. +0.91">
-      </div>
+  <div class="add-form">
+    <div class="form-title">Update Result on June 9 Pre-Loaded Plays</div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+      Play #1 = Pittsburgh Pirates ML | Play #2 = Philadelphia Phillies ML
     </div>
-    <button class="btn btn-primary" onclick="updateResult()">UPDATE RESULT</button>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Play # (1 or 2)</label><input type="number" class="form-input" id="u-index" placeholder="1 or 2"></div>
+      <div class="form-group"><label class="form-label">New Result</label>
+        <select class="form-select" id="u-result"><option value="WIN">Win</option><option value="LOSS">Loss</option><option value="VOID">Void</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">CLV at first pitch</label><input type="text" class="form-input" id="u-clv" placeholder="e.g. -108"></div>
+      <div class="form-group"><label class="form-label">Notes</label><input type="text" class="form-input" id="u-notes" placeholder="optional"></div>
+    </div>
+    <button class="btn btn-primary" onclick="updatePreloaded()">UPDATE RESULT</button>
   </div>
-
 </div>
 
-<!-- TAB: LESSONS -->
+<!-- LESSONS -->
 <div id="tab-lessons" class="content">
-
-  <div class="section-header">
-    Active System Lessons — All 18
-    <span class="section-tag">v7.2</span>
-  </div>
-
+  <div class="section-header">Active System Lessons — All 18<span class="section-tag">v7.2</span></div>
   <div class="lesson-list">
     <div class="lesson-item"><div class="lesson-num">LESSON 01 — DETROIT (05/21)</div><div class="lesson-text">Team offensive production last 10 games overrides individual starter metrics. Both teams' last 10 run production mandatory before any MLB ML or RL play.</div></div>
     <div class="lesson-item"><div class="lesson-num">LESSON 02 — KNICKS (05/21)</div><div class="lesson-text">Once a specific structural flaw is exposed in Game 1 of a series, the blueprint is confirmed. Weight it heavily for the rest of the series.</div></div>
@@ -1043,226 +328,185 @@
     <div class="lesson-item"><div class="lesson-num">LESSON 17 — CHERRY-PICK TRAP (06/09)</div><div class="lesson-text">Single good recent start does not override season ERA. Minimum 3-start pattern required. Single-start narrative = auto-flag.</div></div>
     <div class="lesson-item"><div class="lesson-num">LESSON 18 — DESPERATION PACE SHIFT (06/08)</div><div class="lesson-text">Must-win elimination game — scoring pace accelerates. Under requires explicit desperation modeling. Cannot simultaneously bet player Overs and game Under when Type 9 is active.</div></div>
   </div>
-
 </div>
 
-<!-- TAB: SYSTEM -->
+<!-- SYSTEM -->
 <div id="tab-system" class="content">
-
   <div class="section-header">System Progress</div>
-
   <div class="progress-container">
-    <div class="progress-label">
-      <span class="progress-title">System Rating</span>
-      <span class="progress-pct">98/100</span>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-fill" style="width:98%"></div>
-    </div>
+    <div class="progress-label"><span class="progress-title">System Rating</span><span class="progress-pct">98/100</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:98%"></div></div>
     <div class="progress-sub">v7.2 — Complete Intelligence Edition</div>
   </div>
-
   <div class="progress-container">
-    <div class="progress-label">
-      <span class="progress-title">Prop Graduation</span>
-      <span class="progress-pct">90% (18/20)</span>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-fill" style="width:90%"></div>
-    </div>
+    <div class="progress-label"><span class="progress-title">Prop Graduation</span><span class="progress-pct">90% (18/20)</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
     <div class="progress-sub">11W–7L (61%) — 2 tests from official graduation</div>
   </div>
-
   <div class="divider"></div>
-
   <div class="section-header">Road to 100/100</div>
-
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:16px">
-    <div class="milestone-row">
-      <div class="milestone-dot dot-active"></div>
-      <div class="milestone-text">50+ bets with CLV fully populated in v7.2 era</div>
-    </div>
-    <div class="milestone-row">
-      <div class="milestone-dot dot-active"></div>
-      <div class="milestone-text">Story Type hit-rate database — 30+ plays across all 9 types</div>
-    </div>
-    <div class="milestone-row">
-      <div class="milestone-dot dot-future"></div>
-      <div class="milestone-text">Bankroll anchor defined — unit dollar value set</div>
-    </div>
-    <div class="milestone-row">
-      <div class="milestone-dot dot-active"></div>
-      <div class="milestone-text">Prop track officially graduated (2 tests away)</div>
-    </div>
-    <div class="milestone-row">
-      <div class="milestone-dot dot-future"></div>
-      <div class="milestone-text">NFL season live — first official card</div>
-    </div>
-    <div class="milestone-row">
-      <div class="milestone-dot dot-future"></div>
-      <div class="milestone-text">Live data integration for automatic pulls</div>
-    </div>
+    <div class="milestone-row"><div class="milestone-dot dot-active"></div><div class="milestone-text">50+ bets with CLV fully populated in v7.2 era</div></div>
+    <div class="milestone-row"><div class="milestone-dot dot-active"></div><div class="milestone-text">Story Type hit-rate database — 30+ plays across all 9 types</div></div>
+    <div class="milestone-row"><div class="milestone-dot dot-future"></div><div class="milestone-text">Bankroll anchor defined — unit dollar value set</div></div>
+    <div class="milestone-row"><div class="milestone-dot dot-active"></div><div class="milestone-text">Prop track officially graduated (2 tests away)</div></div>
+    <div class="milestone-row"><div class="milestone-dot dot-future"></div><div class="milestone-text">NFL season live — first official card</div></div>
+    <div class="milestone-row"><div class="milestone-dot dot-future"></div><div class="milestone-text">Live data integration for automatic pulls</div></div>
   </div>
-
   <div class="divider"></div>
-
   <div class="section-header">Version History</div>
-
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px">
-    <div class="version-item">
-      <div class="version-tag">v7.2 — June 9, 2026 (CURRENT)</div>
-      <div class="version-desc">Auto-Execution Protocol (7 rounds, fires on every slate). Master Source Directory all sports. NFL full build out — DVOA, EPA, CPOE, PFF, key numbers, situational flags. Self-improvement loop updated. 31 rules total.</div>
-    </div>
-    <div class="version-item">
-      <div class="version-tag">v7.1 — June 9, 2026</div>
-      <div class="version-desc">Three-stage sequential architecture. Dead-Switch formalized. Cherry-pick trap rule. 5-source requirement. Story Type hit-rate tracking in System 3. Prop availability filter. 29 rules total.</div>
-    </div>
-    <div class="version-item">
-      <div class="version-tag">v7.0 — June 7, 2026</div>
-      <div class="version-desc">Narrative Intelligence Edition. Mandatory three-tier market classification. Named narrative story type requirement. Fresh era record starting June 7.</div>
-    </div>
-    <div class="version-item">
-      <div class="version-tag">v5.5 → v6.x</div>
-      <div class="version-desc">EV formula hardcoded. CLV capture protocol. Star rating tied to win probability. Surface H2H rule. Last 10 run production mandatory.</div>
-    </div>
+    <div class="version-item"><div class="version-tag">v7.2 — June 9, 2026 (CURRENT)</div><div class="version-desc">Auto-Execution Protocol (7 rounds). Master Source Directory all sports. NFL full build out. 31 rules total.</div></div>
+    <div class="version-item"><div class="version-tag">v7.1 — June 9, 2026</div><div class="version-desc">Three-stage sequential architecture. Dead-Switch. Cherry-pick trap. 5-source requirement. 29 rules.</div></div>
+    <div class="version-item"><div class="version-tag">v7.0 — June 7, 2026</div><div class="version-desc">Narrative Intelligence Edition. Three-tier market classification. Named story type requirement.</div></div>
+    <div class="version-item"><div class="version-tag">v5.5 → v6.x</div><div class="version-desc">EV formula. CLV capture. Star ratings. Surface H2H rule. Last 10 run production mandatory.</div></div>
   </div>
-
   <div class="divider"></div>
   <div class="section-header">Master Plan — Phase Status</div>
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px">
-    <div class="milestone-row">
-      <div class="milestone-dot dot-active"></div>
-      <div class="milestone-text"><strong>Phase 1 — Sports Betting (ACTIVE)</strong> — Victory Line Analytics v7.2</div>
-    </div>
-    <div class="milestone-row">
-      <div class="milestone-dot dot-future"></div>
-      <div class="milestone-text">Phase 2 — Forex / Stocks</div>
-    </div>
-    <div class="milestone-row">
-      <div class="milestone-dot dot-future"></div>
-      <div class="milestone-text">Phase 3 — Information Brokerage</div>
-    </div>
-    <div class="milestone-row">
-      <div class="milestone-dot dot-future"></div>
-      <div class="milestone-text">Phase 4 — Financial Sovereignty Structures</div>
-    </div>
-    <div class="milestone-row">
-      <div class="milestone-dot dot-future"></div>
-      <div class="milestone-text">Phase 5 — Private AI Model</div>
-    </div>
-    <div class="milestone-row">
-      <div class="milestone-dot dot-future"></div>
-      <div class="milestone-text">Phase 6 — Full Sovereignty</div>
-    </div>
+    <div class="milestone-row"><div class="milestone-dot dot-active"></div><div class="milestone-text"><strong>Phase 1 — Sports Betting (ACTIVE)</strong> — Victory Line Analytics v7.2</div></div>
+    <div class="milestone-row"><div class="milestone-dot dot-future"></div><div class="milestone-text">Phase 2 — Forex / Stocks</div></div>
+    <div class="milestone-row"><div class="milestone-dot dot-future"></div><div class="milestone-text">Phase 3 — Information Brokerage</div></div>
+    <div class="milestone-row"><div class="milestone-dot dot-future"></div><div class="milestone-text">Phase 4 — Financial Sovereignty Structures</div></div>
+    <div class="milestone-row"><div class="milestone-dot dot-future"></div><div class="milestone-text">Phase 5 — Private AI Model</div></div>
+    <div class="milestone-row"><div class="milestone-dot dot-future"></div><div class="milestone-text">Phase 6 — Full Sovereignty</div></div>
   </div>
-
 </div>
 
-<!-- FOOTER -->
-<div class="footer">
-  <span>🔒 Victory Line Analytics v7.2</span> — Las Vegas, NV — Lloyd<br>
-  "No forced volume. Only documented edges."
-</div>
+<div class="footer"><span>🔒 Victory Line Analytics v7.2</span> — Las Vegas, NV — Lloyd<br>"No forced volume. Only documented edges."</div>
 
 <script>
-// ─── DATA STORE ───────────────────────────────────────────
-let plays = JSON.parse(localStorage.getItem('vla_plays') || '[]');
-
-const storyTypes = [
-  { num: 1, name: 'Trajectory Divergence', desc: 'Record & momentum moving opposite directions' },
-  { num: 2, name: 'Context Reversal', desc: 'Same data, opposite conclusion when context applied' },
-  { num: 3, name: 'Structural Tool Mismatch', desc: 'Primary tools mapped against specific counter-tools' },
-  { num: 4, name: 'Market Anchoring Gap', desc: 'Book priced the headline — we price current reality' },
-  { num: 5, name: 'Blueprint Confirmation', desc: 'Game 1 flaw confirmed as operational map for series' },
-  { num: 6, name: 'Production Quality Signal', desc: 'Who they scored against matters more than how much' },
-  { num: 7, name: 'Adversity Vacuum', desc: 'Unproven competitor meets adversity-tested opponent' },
-  { num: 8, name: 'Style Surface Specificity', desc: 'Tools evaluated against this opponent on this surface' },
-  { num: 9, name: 'Desperation Pace Shift', desc: 'Must-win elimination accelerates scoring pace' }
+// PRE-LOADED JUNE 9 PLAYS — hardcoded, not dependent on localStorage
+const preloaded = [
+  {
+    num: 1,
+    date: 'Jun 9',
+    pick: 'Pittsburgh Pirates ML',
+    sport: 'MLB',
+    type: 'ML',
+    odds: '-110',
+    units: '1.25',
+    stars: '⭐⭐⭐⭐⭐',
+    story: '4',
+    ev: '+0.184',
+    result: 'PENDING',
+    clv: '—',
+    ds: '⚡ Will Smith (LAD) day-to-day — confirm active'
+  },
+  {
+    num: 2,
+    date: 'Jun 9',
+    pick: 'Philadelphia Phillies ML',
+    sport: 'MLB',
+    type: 'ML',
+    odds: '-115',
+    units: '1.0',
+    stars: '⭐⭐⭐⭐',
+    story: '4',
+    ev: '+0.141',
+    result: 'PENDING',
+    clv: '—',
+    ds: '⚡ Cease must take mound — if scratched play is OFF'
+  }
 ];
 
-// ─── TAB SWITCHING ────────────────────────────────────────
-function showTab(name) {
+// Additional plays from localStorage
+let extraPlays = JSON.parse(localStorage.getItem('vla_plays') || '[]');
+
+const storyTypes = [
+  {num:1,name:'Trajectory Divergence',desc:'Record & momentum moving opposite directions'},
+  {num:2,name:'Context Reversal',desc:'Same data, opposite conclusion when context applied'},
+  {num:3,name:'Structural Tool Mismatch',desc:'Primary tools mapped against specific counter-tools'},
+  {num:4,name:'Market Anchoring Gap',desc:'Book priced the headline — we price current reality'},
+  {num:5,name:'Blueprint Confirmation',desc:'Game 1 flaw confirmed as operational map for series'},
+  {num:6,name:'Production Quality Signal',desc:'Who they scored against matters more than how much'},
+  {num:7,name:'Adversity Vacuum',desc:'Unproven competitor meets adversity-tested opponent'},
+  {num:8,name:'Style Surface Specificity',desc:'Tools evaluated against this opponent on this surface'},
+  {num:9,name:'Desperation Pace Shift',desc:'Must-win elimination accelerates scoring pace'}
+];
+
+function showTab(name, el) {
   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
-
+  el.classList.add('active');
   if (name === 'storytypes') renderStoryTypes();
   if (name === 'official') updateStats();
 }
 
-// ─── CALCULATE P/L FROM ODDS ──────────────────────────────
 function calcPL(oddsStr, units, result) {
   const odds = parseInt(oddsStr);
   if (isNaN(odds)) return 0;
-  let profit;
-  if (odds > 0) profit = units * (odds / 100);
-  else profit = units * (100 / Math.abs(odds));
+  const profit = odds > 0 ? units * (odds/100) : units * (100/Math.abs(odds));
   if (result === 'WIN') return Math.round(profit * 100) / 100;
   if (result === 'LOSS') return -units;
   return 0;
 }
 
-// ─── UPDATE HEADER STATS ──────────────────────────────────
 function updateStats() {
-  const closed = plays.filter(p => p.result === 'WIN' || p.result === 'LOSS');
-  const wins = plays.filter(p => p.result === 'WIN').length;
-  const losses = plays.filter(p => p.result === 'LOSS').length;
-  const netUnits = plays.reduce((sum, p) => {
-    const pl = calcPL(p.odds, parseFloat(p.units), p.result);
-    return sum + pl;
-  }, 0);
+  const allPlays = [...preloaded, ...extraPlays];
+  const closed = allPlays.filter(p => p.result === 'WIN' || p.result === 'LOSS');
+  const wins = allPlays.filter(p => p.result === 'WIN').length;
+  const losses = allPlays.filter(p => p.result === 'LOSS').length;
+  const net = allPlays.reduce((s,p) => s + calcPL(p.odds, parseFloat(p.units), p.result), 0);
 
-  const allWins = 15 + wins;
-  const allLosses = 13 + losses;
-  const allNet = 1.94 + netUnits;
-
-  document.getElementById('alltime-wl').textContent = allWins + '–' + allLosses;
-  document.getElementById('alltime-units').textContent = (allNet >= 0 ? '+' : '') + allNet.toFixed(2) + 'u';
-  document.getElementById('alltime-units').className = 'stat-value ' + (allNet >= 0 ? 'positive' : 'negative');
-
+  document.getElementById('alltime-wl').textContent = (15+wins) + '–' + (13+losses);
+  const allNet = 1.94 + net;
+  document.getElementById('alltime-units').textContent = (allNet>=0?'+':'') + allNet.toFixed(2) + 'u';
+  document.getElementById('alltime-units').className = 'stat-value ' + (allNet>=0?'positive':'negative');
   document.getElementById('era-wl').textContent = wins + '–' + losses;
-  document.getElementById('era-units').textContent = (netUnits >= 0 ? '+' : '') + netUnits.toFixed(2) + 'u';
-
+  document.getElementById('era-units').textContent = (net>=0?'+':'') + net.toFixed(2) + 'u';
   document.getElementById('v72-wl-display').textContent = wins + '–' + losses;
-  document.getElementById('v72-units-display').textContent = (netUnits >= 0 ? '+' : '') + netUnits.toFixed(2) + 'u';
-  document.getElementById('v72-pct-display').textContent = closed.length > 0 ? Math.round(wins / closed.length * 100) + '%' : '—';
+  document.getElementById('v72-units-display').textContent = (net>=0?'+':'') + net.toFixed(2) + 'u';
+  document.getElementById('v72-pct-display').textContent = closed.length > 0 ? Math.round(wins/closed.length*100)+'%' : '—';
 
   renderV72Table();
 }
 
-// ─── RENDER v7.2 TABLE ────────────────────────────────────
 function renderV72Table() {
+  const allPlays = [...preloaded, ...extraPlays];
   const tbody = document.getElementById('v72-tbody');
-  if (plays.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="12"><div class="empty"><div class="empty-icon">📋</div>No plays logged yet — use Add Play tab</div></td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = plays.map((p, i) => {
+  tbody.innerHTML = allPlays.map((p, i) => {
     const pl = calcPL(p.odds, parseFloat(p.units), p.result);
-    const plStr = p.result === 'VOID' ? '0u' : (pl >= 0 ? '+' : '') + pl.toFixed(2) + 'u';
-    const plClass = p.result === 'WIN' ? 'pl-pos' : p.result === 'LOSS' ? 'pl-neg' : 'pl-zero';
-    const badgeClass = p.result === 'WIN' ? 'badge-win' : p.result === 'LOSS' ? 'badge-loss' : p.result === 'VOID' ? 'badge-void' : 'badge-pending';
-
+    const plStr = p.result==='VOID'?'0u':(pl>=0?'+':'')+pl.toFixed(2)+'u';
+    const plClass = p.result==='WIN'?'pl-pos':p.result==='LOSS'?'pl-neg':'pl-zero';
+    const bc = p.result==='WIN'?'badge-win':p.result==='LOSS'?'badge-loss':p.result==='VOID'?'badge-void':'badge-pending';
     return `<tr>
+      <td>${i+1}</td>
       <td>${p.date}</td>
-      <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.pick}</td>
+      <td style="max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+        ${p.pick}${p.ds ? `<div class="ds-note">${p.ds}</div>` : ''}
+      </td>
       <td>${p.sport}</td>
-      <td>${p.type}</td>
       <td>${p.odds}</td>
       <td>${p.units}u</td>
       <td>${p.stars.split(' ')[0]}</td>
       <td>T${p.story}</td>
       <td>${p.ev}</td>
-      <td><span class="badge ${badgeClass}">${p.result}</span></td>
+      <td><span class="badge ${bc}">${p.result}</span></td>
       <td class="${plClass}">${plStr}</td>
-      <td>${p.clv || '—'}</td>
+      <td>${p.clv||'—'}</td>
     </tr>`;
   }).join('');
 }
 
-// ─── ADD PLAY ─────────────────────────────────────────────
+function updatePreloaded() {
+  const idx = parseInt(document.getElementById('u-index').value) - 1;
+  if (isNaN(idx) || idx < 0 || idx >= preloaded.length) {
+    alert('Enter 1 for PIT ML or 2 for PHI ML');
+    return;
+  }
+  preloaded[idx].result = document.getElementById('u-result').value;
+  const clv = document.getElementById('u-clv').value;
+  if (clv) preloaded[idx].clv = clv;
+  const notes = document.getElementById('u-notes').value;
+  if (notes) preloaded[idx].ds = notes;
+  // Save override to localStorage
+  localStorage.setItem('vla_preloaded_overrides', JSON.stringify(preloaded));
+  updateStats();
+  alert('Play #' + (idx+1) + ' — ' + preloaded[idx].pick + ' updated to ' + preloaded[idx].result);
+}
+
 function addPlay() {
   const play = {
     date: document.getElementById('f-date').value || new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}),
@@ -1278,77 +522,53 @@ function addPlay() {
     clv: document.getElementById('f-clv').value,
     list: document.getElementById('f-list').value
   };
-
-  if (!play.pick || !play.odds || !play.units) {
-    alert('Pick, Odds, and Units are required.');
-    return;
-  }
-
-  plays.push(play);
-  localStorage.setItem('vla_plays', JSON.stringify(plays));
+  if (!play.pick || !play.odds || !play.units) { alert('Pick, Odds, and Units required.'); return; }
+  extraPlays.push(play);
+  localStorage.setItem('vla_plays', JSON.stringify(extraPlays));
   updateStats();
-  alert('Play logged: ' + play.pick);
-
-  // Reset form
+  alert('Logged: ' + play.pick);
   ['f-pick','f-odds','f-units','f-ev','f-clv'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-result').value = 'PENDING';
 }
 
-// ─── UPDATE RESULT ────────────────────────────────────────
-function updateResult() {
-  const idx = parseInt(document.getElementById('u-index').value) - 1;
-  if (isNaN(idx) || idx < 0 || idx >= plays.length) {
-    alert('Invalid play index.');
-    return;
-  }
-  plays[idx].result = document.getElementById('u-result').value;
-  const clv = document.getElementById('u-clv').value;
-  if (clv) plays[idx].clv = clv;
-  localStorage.setItem('vla_plays', JSON.stringify(plays));
-  updateStats();
-  alert('Play #' + (idx+1) + ' updated to ' + plays[idx].result);
-}
-
-// ─── STORY TYPE TRACKER ───────────────────────────────────
 function renderStoryTypes() {
-  const grid = document.getElementById('story-grid');
-
-  const storyStats = {};
-  storyTypes.forEach(st => storyStats[st.num] = { w: 0, l: 0 });
-
-  plays.forEach(p => {
-    const sn = parseInt(p.story);
-    if (storyStats[sn]) {
-      if (p.result === 'WIN') storyStats[sn].w++;
-      else if (p.result === 'LOSS') storyStats[sn].l++;
+  const allPlays = [...preloaded, ...extraPlays];
+  const stats = {};
+  storyTypes.forEach(st => stats[st.num] = {w:0,l:0});
+  allPlays.forEach(p => {
+    const n = parseInt(p.story);
+    if (stats[n]) {
+      if (p.result==='WIN') stats[n].w++;
+      else if (p.result==='LOSS') stats[n].l++;
     }
   });
-
-  grid.innerHTML = storyTypes.map(st => {
-    const s = storyStats[st.num];
+  document.getElementById('story-grid').innerHTML = storyTypes.map(st => {
+    const s = stats[st.num];
     const total = s.w + s.l;
-    const pct = total > 0 ? Math.round(s.w / total * 100) : 0;
-    const barWidth = total > 0 ? pct : 0;
-    const statsText = total > 0 ? `${s.w}W–${s.l}L (${pct}%)` : 'No plays yet';
-
+    const pct = total > 0 ? Math.round(s.w/total*100) : 0;
     return `<div class="story-row">
       <div class="story-top">
-        <div class="story-name">
-          <span class="story-type-num">T${st.num}</span>${st.name}
-        </div>
-        <div class="story-stats">${statsText}</div>
+        <div class="story-name"><span class="story-type-num">T${st.num}</span>${st.name}</div>
+        <div class="story-stats">${total>0?s.w+'W–'+s.l+'L ('+pct+'%)':'No plays yet'}</div>
       </div>
-      <div style="font-size:10px;color:var(--muted);margin-bottom:8px;font-family:'IBM Plex Sans',sans-serif">${st.desc}</div>
-      <div class="story-bar-bg">
-        <div class="story-bar-fill" style="width:${barWidth}%"></div>
-      </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:8px">${st.desc}</div>
+      <div class="story-bar-bg"><div class="story-bar-fill" style="width:${total>0?pct:0}%"></div></div>
     </div>`;
   }).join('');
 }
 
-// ─── INIT ─────────────────────────────────────────────────
+// Load any saved overrides from previous session
+const savedOverrides = JSON.parse(localStorage.getItem('vla_preloaded_overrides') || 'null');
+if (savedOverrides) {
+  savedOverrides.forEach((o, i) => {
+    if (preloaded[i]) {
+      preloaded[i].result = o.result;
+      preloaded[i].clv = o.clv;
+    }
+  });
+}
+
 updateStats();
 </script>
-
 </body>
 </html>
